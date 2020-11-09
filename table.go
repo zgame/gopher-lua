@@ -211,6 +211,19 @@ func (tb *LTable) RawSetString(key string, value LValue) {
 	if value == LNil {
 		// TODO tb.keys and tb.k2i should also be removed
 		delete(tb.strdict, key)
+
+		lKey := LString(key)
+		oldIndex :=  tb.k2i[lKey]
+		//fmt.Println("lKey",lKey)
+		//fmt.Println("oldIndex",oldIndex)
+		tb.keys = append(tb.keys[:oldIndex],tb.keys[oldIndex+1:]...) // remove  keys
+		delete(tb.k2i, lKey)                                         // remove  k2i
+		for k,v:=range tb.k2i{
+			if v > oldIndex {
+				tb.k2i[k] --
+			}
+		}
+
 	} else {
 		tb.strdict[key] = value
 		lkey := LString(key)
